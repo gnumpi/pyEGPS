@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import argparse
 
-from . import get_all_devices, get_device_types
+from . import get_all_devices, get_device_types, __version__
 from .device import Device
 from .exceptions import INVALID_SOCKET_NUMBER
 
@@ -35,6 +35,9 @@ def cli(argList: list[str]) -> int:
         help="Specify device[s] to use. Can be omitted if only one device is present.",
     )
     parser.add_argument("--debug", action="store_true", help="Print debug information.")
+    parser.add_argument(
+        "--version", action="store_true", help="Print debug information."
+    )
 
     # List devices
     list_cmd = subparsers.add_parser("list", help="Search for supported devices.")
@@ -75,6 +78,10 @@ def cli(argList: list[str]) -> int:
     )
 
     args = parser.parse_args(argList)
+
+    if args.version:
+        print(__version__)
+        return 0
 
     if args.command == "list":
         dev_type = args.type if len(device_types) > 1 else "all"

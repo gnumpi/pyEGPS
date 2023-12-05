@@ -1,4 +1,12 @@
 """Controlling Energenie Power Strips."""
+from importlib.metadata import version, PackageNotFoundError
+
+try:
+    __version__ = version("package-name")
+except PackageNotFoundError:
+    from ._version import __version__  # noqa
+
+
 from .device import Device
 
 from .usb.eg_powerstrip import PowerStripUSB

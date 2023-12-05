@@ -26,3 +26,6 @@ dist/
 
 # Testing and Linting
 .tox
+
+# runtime files
+_version.py
