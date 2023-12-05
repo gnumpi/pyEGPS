@@ -1,7 +1,9 @@
 """Controlling Energenie PM power strips."""
 from .devices import Device
 
-DEVICE_IMPLEMENTATIONS: list[Device] = []
+from .usb.eg_powerstrip import PowerStripUSB
+
+DEVICE_IMPLEMENTATIONS: list[Device] = [PowerStripUSB]
 
 
 def get_all_devices() -> list[Device]:

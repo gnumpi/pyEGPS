@@ -94,11 +94,12 @@ def cli(argList: list[str]) -> int:
         return 1
 
     if args.command == "set":
-        if len(args.on) + len(args.off) == 0:
+        on_sockets = [item for sublist in args.on for item in sublist]
+        off_sockets = [item for sublist in args.off for item in sublist]
+        if len(on_sockets) + len(off_sockets) == 0:
             print("Please specify at least one --on or --off argument")
             return 1
         for device in devices:
-            on_sockets = [item for sublist in args.on for item in sublist]
             for socket in on_sockets:
                 try:
                     device.switch_on(socket)
@@ -107,7 +108,6 @@ def cli(argList: list[str]) -> int:
                         f"Device {device} has no socket {socket}. Known sockets: {list(range(device.numberOfSockets))}."
                     )
                     return 1
-            off_sockets = [item for sublist in args.off for item in sublist]
             for socket in off_sockets:
                 try:
                     device.switch_off(socket)
