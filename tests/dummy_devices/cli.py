@@ -2,7 +2,7 @@
 
 import os
 import sys
-from .powerstrip import DummyPowerStrip
+
 
 this_path = os.path.dirname(__file__)
 sys.path.append(os.path.join(this_path, "..", "..", "src"))
@@ -10,6 +10,7 @@ sys.path.append(os.path.join(this_path, "..", "..", "src"))
 import pyegpm  # noqa
 from pyegpm import cli  # noqa
 
+from .powerstrip import DummyPowerStrip
 pyegpm.DEVICE_IMPLEMENTATIONS = [DummyPowerStrip]
 
 

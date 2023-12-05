@@ -51,6 +51,7 @@ def cli(argList: list[str]) -> int:
         "--on",
         type=int,
         nargs="*",
+        action="append",
         metavar="SOCKET_NR",
         default=[],
         help="Turn SOCKET_NR on.",
@@ -59,6 +60,7 @@ def cli(argList: list[str]) -> int:
         "--off",
         type=int,
         nargs="*",
+        action="append",
         metavar="SOCKET_NR",
         default=[],
         help="Turn SOCKET_NR off.",
@@ -68,6 +70,7 @@ def cli(argList: list[str]) -> int:
     status_cmd.add_argument(
         "SOCKET_NR",
         nargs="*",
+        type=int,
         help="Status of SOCKET_NR, print summary if no SOCKET_NR is given.",
     )
 
@@ -95,7 +98,8 @@ def cli(argList: list[str]) -> int:
             print("Please specify at least one --on or --off argument")
             return 1
         for device in devices:
-            for socket in args.on:
+            on_sockets = [item for sublist in args.on for item in sublist]
+            for socket in on_sockets:
                 try:
                     device.switch_on(socket)
                 except INVALID_SOCKET_NUMBER:
@@ -103,8 +107,8 @@ def cli(argList: list[str]) -> int:
                         f"Device {device} has no socket {socket}. Known sockets: {list(range(device.numberOfSockets))}."
                     )
                     return 1
-
-            for socket in args.off:
+            off_sockets = [item for sublist in args.off for item in sublist]
+            for socket in off_sockets:
                 try:
                     device.switch_off(socket)
                 except INVALID_SOCKET_NUMBER:
@@ -112,6 +116,7 @@ def cli(argList: list[str]) -> int:
                         f"Device {device} has no socket {socket}. Known sockets: {list(range(device.numberOfSockets))}."
                     )
                     return 1
+        return 0
 
     elif args.command == "status":
         for device in devices:

@@ -7,11 +7,16 @@ from pyegpm import cli
 pyegpm.DEVICE_IMPLEMENTATIONS = [DummyPowerStrip]
 
 
-def test_main():
-    """Dummy test."""
-    devices = DummyPowerStrip.search_for_devices()
-    ps = DummyPowerStrip.get_device(devices[0].deviceId)
-    ps.switch_on(1)
+def test_exit_codes():
+    #Device has socket 3
+    assert cli.cli(["--device", "AA:BB:CC", "set", "--on", "3"] ) == 0
+    #Device has only sockets 0 and 1
+    assert cli.cli(["--device", "00:11:22", "set", "--on", "3"] ) == 1
 
-    assert len(cli.list_devices()) == 2
-    assert len(pyegpm.get_all_devices()) == 2
+def test_outputs(capsys):
+    #set status and read if it the same
+    cli.cli(["--device", "AA:BB:CC", "set", "--on", "0", "2", "--off", "1", "3"] )
+    cli.cli(["--device", "AA:BB:CC", "status", "0", "1", "2", "3"] )
+    captured = capsys.readouterr()
+    assert captured.out.strip() == "on off on off"
+    
