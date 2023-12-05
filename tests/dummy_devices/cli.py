@@ -10,7 +10,8 @@ sys.path.append(os.path.join(this_path, "..", "..", "src"))
 import pyegpm  # noqa
 from pyegpm import cli  # noqa
 
-from .powerstrip import DummyPowerStrip
+from .powerstrip import DummyPowerStrip  # noqa
+
 pyegpm.DEVICE_IMPLEMENTATIONS = [DummyPowerStrip]
 
 
