@@ -1,6 +1,7 @@
 [project]
-name = "pyEGPM"
-version = "2023.11.0.dev0"
+name = "pyEGPS"
+#version = "2023.11.0.dev0"
+dynamic = ["version"]
 authors = [
     {name = "Mischa Siekmann", email = "mischa@gnumpi.com"},
 ]
@@ -27,3 +28,4 @@ where = ["src"]
 # For smarter version schemes and other configuration options,
 # check out https://github.com/pypa/setuptools_scm
 version_scheme = "no-guess-dev"
+version_file =  "src/pyegps/_version.py"

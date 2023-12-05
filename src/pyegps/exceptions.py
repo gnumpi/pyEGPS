@@ -1,4 +1,4 @@
-"""Custom Exceptions of pyEGPM."""
+"""Custom Exceptions of pyEGPS."""
 
 
 class INVALID_SOCKET_NUMBER(Exception):

@@ -7,12 +7,12 @@ import sys
 this_path = os.path.dirname(__file__)
 sys.path.append(os.path.join(this_path, "..", "..", "src"))
 
-import pyegpm  # noqa
-from pyegpm import cli  # noqa
+import pyegps  # noqa
+from pyegps import cli  # noqa
 
 from .powerstrip import DummyPowerStrip  # noqa
 
-pyegpm.DEVICE_IMPLEMENTATIONS = [DummyPowerStrip]
+pyegps.DEVICE_IMPLEMENTATIONS = [DummyPowerStrip]
 
 
 if __name__ == "__main__":

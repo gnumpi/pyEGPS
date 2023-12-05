@@ -1,4 +1,4 @@
-"""Controlling Energenie PM power strips."""
+"""Controlling Energenie Power Strips."""
 from .devices import Device
 
 from .usb.eg_powerstrip import PowerStripUSB

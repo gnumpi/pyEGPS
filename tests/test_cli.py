@@ -1,10 +1,10 @@
-"""Command line interface (cli) tests for pyEGPM."""
-import pyegpm
-from pyegpm import cli
+"""Command line interface (cli) tests for pyEGPS."""
+import pyegps
+from pyegps import cli
 
 from .dummy_devices.powerstrip import DummyPowerStrip
 
-pyegpm.DEVICE_IMPLEMENTATIONS = [DummyPowerStrip]
+pyegps.DEVICE_IMPLEMENTATIONS = [DummyPowerStrip]
 
 
 def test_exit_codes():

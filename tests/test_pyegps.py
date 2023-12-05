@@ -1,4 +1,4 @@
-"""Main pyEGPM tests."""
+"""Main pyEGPS tests."""
 
 
 def test_main():

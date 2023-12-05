@@ -1,4 +1,4 @@
-"""Simple command line interface for pyEGPM."""
+"""Simple command line interface for pyEGPS."""
 from __future__ import annotations
 
 import argparse
@@ -24,7 +24,7 @@ def list_devices(device_type: str = "all") -> int:
 def cli(argList: list[str]) -> int:
     """Command Line Interface (CLI)."""
     parser = argparse.ArgumentParser(
-        description="Simple command line interface for controlling Energenie-Power-Strips"
+        description="Simple command line interface for controlling EnerGenie Power Strips"
     )
 
     subparsers = parser.add_subparsers(dest="command")
