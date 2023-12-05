@@ -4,7 +4,7 @@ dynamic = ["version"]
 authors = [
     {name = "Mischa Siekmann", email = "mischa@gnumpi.com"},
 ]
-description = "Controlling Energenie PM power strips with python."
+description = "Controlling Energenie Power Strips with python."
 readme = "README.md"
 requires-python = ">=3.8"
 keywords = []

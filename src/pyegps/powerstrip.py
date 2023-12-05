@@ -3,7 +3,7 @@
 import abc
 import logging
 
-from .devices import Device
+from .device import Device
 from .exceptions import (
     INVALID_SOCKET_NUMBER,
 )
@@ -17,11 +17,6 @@ class PowerStrip(Device, abc.ABC):
     @staticmethod
     def get_device_type() -> str:
         return "PowerStrip"
-
-    @property
-    @abc.abstractmethod
-    def deviceId(self) -> str:
-        """Return the unique identifier of the power strip."""
 
     @property
     @abc.abstractmethod
@@ -62,7 +57,7 @@ class PowerStrip(Device, abc.ABC):
 
     def __repr__(self) -> str:
         """Override default repr string."""
-        return f"Powerstrip: {self.deviceId}\n"
+        return f"Powerstrip: {self.device_id}\n"
 
     def summary(self) -> str:
         s = self.__repr__() + "\n"

@@ -39,22 +39,32 @@ class PowerStripUSB(PowerStrip):
             raise UNSUPPORTED_PRODUCT_ID
 
         self._dev = dev
-        self._deviceId = None
+        self._device_id = None
 
         minAddr, maxAddr = PRODUCT_SOCKET_RANGES[USB_PRODUCT_IDS.index(self.productId)]
         self._addrMapping = range(minAddr, maxAddr + 1)
 
     @property
-    def deviceId(self):
+    def device_id(self):
         """Return unique ID of the device, read from firmware."""
-        if self._deviceId is None:
+        if self._device_id is None:
             self._read_device_id()
-        return self._deviceId
+        return self._device_id
 
     @property
     def numberOfSockets(self):
         """Return number of controllable sockets."""
         return len(self._addrMapping)
+
+    @property
+    def manufacturer(self):
+        """Return the manufacturer as read from the device."""
+        return self._dev.manufacturer
+
+    @property
+    def name(self):
+        """Return the product name as read from the device."""
+        return self._dev.product
 
     def get_status(self, socket: int) -> bool:
         """
@@ -131,13 +141,13 @@ class PowerStripUSB(PowerStrip):
         buf = bytes([0x00, 0x00, 0x00, 0x00, 0x00])
         id = self._ctrl_transfer(0xA1, 0x01, 0x0301, 0, buf)
         if id:
-            self._deviceId = ":".join([format(x, "02x") for x in id])
+            self._device_id = ":".join([format(x, "02x") for x in id])
             _logger.debug(f"The device id is: {self.deviceId}")
         _logger.debug("Couldn't read device id")
 
     @classmethod
     def search_for_devices(cls) -> list[PowerStripUSB]:
-        """List the usb devices which have a known EGPM product_id."""
+        """List the usb devices which have a known EG-PM product_id."""
         devices = []
         for prodId in USB_PRODUCT_IDS:
             devices += [
@@ -150,7 +160,7 @@ class PowerStripUSB(PowerStrip):
 
     @classmethod
     def get_device(cls, device_id: str) -> PowerStripUSB | None:
-        """Try to locate a specific EGPM device.
+        """Try to locate a specific EG-PM device.
 
         :param deviceId: The device specific firmware id.
         :type deviceId: str

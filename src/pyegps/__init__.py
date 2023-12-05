@@ -1,5 +1,5 @@
 """Controlling Energenie Power Strips."""
-from .devices import Device
+from .device import Device
 
 from .usb.eg_powerstrip import PowerStripUSB
 

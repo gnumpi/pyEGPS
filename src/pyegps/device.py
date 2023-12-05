@@ -1,5 +1,4 @@
-"""Definition of the devices base class."""
-
+"""Definition of the base class for alle devices."""
 from __future__ import annotations
 
 import abc
@@ -8,10 +7,22 @@ import abc
 class Device(abc.ABC):
     """Abstract base class for all devices."""
 
+    @abc.abstractmethod
+    def device_id(self):
+        """Return a unique identifier for the device."""
+
+    @abc.abstractmethod
+    def manufacturer(self):
+        """Return the device manufacturer."""
+
+    @abc.abstractmethod
+    def name(self):
+        """Return the product name."""
+
     @staticmethod
     @abc.abstractmethod
     def get_device_type() -> str:
-        """Return device type."""
+        """Return the device type."""
 
     @classmethod
     @abc.abstractmethod
@@ -25,4 +36,4 @@ class Device(abc.ABC):
 
     @abc.abstractmethod
     def summary(self) -> str:
-        """Return summary of device status."""
+        """Return a summary of the device status."""

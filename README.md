@@ -8,10 +8,27 @@ This library is meant to be used with [Home Assistant](https://www.home-assistan
 ```
 pip install pyegps
 ```
+Make sure the user has the necessary rights to access the device. E.g.:
+find your device with:
+```bash
+lsusb
+#e.g.: Bus 001 Device 005: ID 04b4:fd15 Cypress Semiconductor Corp. Energenie EG-PMS2
+```
+
+```bash
+sudo echo 'SUBSYSTEM=="usb", ATTR{idVendor}=="04b4", ATTR{idProduct}=="fd15", MODE="0666"' > /lib/udev/rules.d/60-energenie-usb.rules
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+```
+
 
 
 ### Command Line Interace (CLI)
 For help, see:
 ```
-python3 -m pyegpm --help
+python3 -m pyegps --help
 ```
+
+### Acknowledgment
+Thanks go to @xypron for figuring out how to access the devices via pyusb:
+https://github.com/xypron/pysispm

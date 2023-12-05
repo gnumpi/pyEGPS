@@ -4,7 +4,7 @@ from __future__ import annotations
 import argparse
 
 from . import get_all_devices, get_device_types
-from .devices import Device
+from .device import Device
 from .exceptions import INVALID_SOCKET_NUMBER
 
 
@@ -83,7 +83,7 @@ def cli(argList: list[str]) -> int:
     devices = get_all_devices()
     # filter devices if requested
     if args.device is not None:
-        devices = [d for d in devices if d.deviceId == args.device]
+        devices = [d for d in devices if d.device_id == args.device]
 
     if len(devices) == 0:
         print(

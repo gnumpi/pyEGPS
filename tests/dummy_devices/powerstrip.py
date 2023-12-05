@@ -18,12 +18,20 @@ class DummyPowerStrip(PowerStrip):
         self._status = [random.randint(0, 1) for _ in range(number_of_sockets)]
 
     @property
-    def deviceId(self) -> str:
+    def device_id(self) -> str:
         return self._devId
 
     @property
     def numberOfSockets(self):
         return self._numberOfSockets
+
+    @property
+    def manufacturer(self):
+        return "DummyDevices"
+
+    @property
+    def name(self):
+        return "DummyPowerStrip"
 
     def switch_on(self, socket: int) -> None:
         super().switch_on(socket)
@@ -51,9 +59,9 @@ class DummyPowerStrip(PowerStrip):
     def get_device(cls, device_id: str) -> DummyPowerStrip | None:
         devices = cls.search_for_devices()
         for d in devices:
-            if d.deviceId == device_id:
+            if d.device_id == device_id:
                 return d
         return None
 
     def __repr__(self) -> str:
-        return f"DummyPowerStrip: {self.deviceId}"
+        return f"DummyPowerStrip: {self.device_id}"
