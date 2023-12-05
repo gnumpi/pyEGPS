@@ -1,5 +1,6 @@
 """Using CLI as main entry point."""
-from .cli import cli
 import sys
+
+from .cli import cli
 
 sys.exit(cli(sys.argv[1:]))

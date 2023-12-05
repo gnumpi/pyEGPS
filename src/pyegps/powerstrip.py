@@ -1,6 +1,6 @@
 """Abstract PowerStrip Class."""
 
-from abc import ABC, abstractproperty
+import abc
 import logging
 
 from .devices import Device
@@ -11,22 +11,22 @@ from .exceptions import (
 _logger = logging.getLogger(__name__)
 
 
-class PowerStrip(Device, ABC):
+class PowerStrip(Device, abc.ABC):
     """Abstract class of a PowerStrip device."""
 
     @staticmethod
     def get_device_type() -> str:
         return "PowerStrip"
 
-    @abstractproperty
+    @property
+    @abc.abstractmethod
     def deviceId(self) -> str:
         """Return the unique identifier of the power strip."""
-        pass
 
-    @abstractproperty
+    @property
+    @abc.abstractmethod
     def numberOfSockets(self) -> int:
         """Return number of controllable sockets."""
-        pass
 
     def get_status(self, socket: int) -> bool:
         """

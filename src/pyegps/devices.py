@@ -2,27 +2,27 @@
 
 from __future__ import annotations
 
-from abc import ABC, abstractclassmethod, abstractmethod, abstractstaticmethod
+import abc
 
 
-class Device(ABC):
+class Device(abc.ABC):
     """Abstract base class for all devices."""
 
-    @abstractstaticmethod
+    @staticmethod
+    @abc.abstractmethod
     def get_device_type() -> str:
         """Return device type."""
 
-    @abstractclassmethod
+    @classmethod
+    @abc.abstractmethod
     def search_for_devices(cls) -> list[Device]:
         """Search for supported devices."""
-        pass
 
-    @abstractclassmethod
+    @classmethod
+    @abc.abstractmethod
     def get_device(cls, device_id: str) -> Device | None:
         """Get the device for the given device_id."""
-        pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def summary(self) -> str:
         """Return summary of device status."""
-        pass

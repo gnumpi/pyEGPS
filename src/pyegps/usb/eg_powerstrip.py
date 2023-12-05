@@ -129,9 +129,9 @@ class PowerStripUSB(PowerStrip):
 
     def _read_device_id(self):
         buf = bytes([0x00, 0x00, 0x00, 0x00, 0x00])
-        id = self._send_ctrl_transfer(0xA1, 0x01, 0x0301, 0, buf)
+        id = self._ctrl_transfer(0xA1, 0x01, 0x0301, 0, buf)
         if id:
-            self.deviceId = ":".join([format(x, "02x") for x in id])
+            self._deviceId = ":".join([format(x, "02x") for x in id])
             _logger.debug(f"The device id is: {self.deviceId}")
         _logger.debug("Couldn't read device id")
 
@@ -149,7 +149,7 @@ class PowerStripUSB(PowerStrip):
         return devices
 
     @classmethod
-    def get_device(cls, deviceId: str) -> PowerStripUSB | None:
+    def get_device(cls, device_id: str) -> PowerStripUSB | None:
         """Try to locate a specific EGPM device.
 
         :param deviceId: The device specific firmware id.
@@ -159,6 +159,6 @@ class PowerStripUSB(PowerStrip):
         """
         candidates = cls.search_for_devices()
         for dev in candidates:
-            if dev.deviceId == deviceId:
+            if dev.deviceId == device_id:
                 return dev
         return None
