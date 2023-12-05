@@ -1,6 +1,5 @@
 [project]
 name = "pyEGPS"
-#version = "2023.11.0.dev0"
 dynamic = ["version"]
 authors = [
     {name = "Mischa Siekmann", email = "mischa@gnumpi.com"},
