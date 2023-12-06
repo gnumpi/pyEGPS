@@ -30,5 +30,5 @@ python3 -m pyegps --help
 ```
 
 ### Acknowledgment
-Thanks go to @xypron for figuring out how to access the devices via pyusb:
+Thanks go to the author of 'pysispm' for figuring out which HID-Reports are used for communicating with the device:
 https://github.com/xypron/pysispm

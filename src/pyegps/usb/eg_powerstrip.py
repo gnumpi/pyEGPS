@@ -105,7 +105,7 @@ class PowerStripUSB(PowerStrip):
 
         addr = self._addrMapping[socket]
         buf = bytes([3 * addr, 0x00])
-        self._ctrl_transfer(0x21, 0x09, 0x0300 + 3 * addr, 0, buf)
+        self._set_feature_report(3 * addr, buf)
 
     def switch_on(self, socket: int) -> None:
         """
