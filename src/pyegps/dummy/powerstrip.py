@@ -17,21 +17,10 @@ class DummyPowerStrip(PowerStrip):
         self._numberOfSockets = number_of_sockets
         self._status = [random.randint(0, 1) for _ in range(number_of_sockets)]
 
-    @property
-    def device_id(self) -> str:
-        return self._devId
-
+    # PowerStrip implementations
     @property
     def numberOfSockets(self):
         return self._numberOfSockets
-
-    @property
-    def manufacturer(self):
-        return "DummyDevices"
-
-    @property
-    def name(self):
-        return "DummyPowerStrip"
 
     def switch_on(self, socket: int) -> None:
         super().switch_on(socket)
@@ -45,8 +34,30 @@ class DummyPowerStrip(PowerStrip):
         super().get_status(socket)
         return self._status[socket] == 1
 
+    # Device implementations
+    @property
+    def uid(self) -> str:
+        """Return an identifier among DummyPowerStrip devices."""
+        return self._devId
+
+    @property
+    def manufacturer(self) -> str:
+        """Return the device manufacturer."""
+        return "DummyDevices"
+
+    @property
+    def name(self) -> str:
+        """Return the product name."""
+        return "DummyPowerStrip"
+
+    @classmethod
+    def get_implementation_id(cls) -> str:
+        """Return an identifier for this implementation."""
+        return "DYPS"
+
     @classmethod
     def search_for_devices(cls) -> list[DummyPowerStrip]:
+        """Return the dummy devices, create new if necessary."""
         if len(cls.DEVICES) == 0:
             cls.DEVICES += [
                 cls(devId, sockets)
@@ -54,14 +65,3 @@ class DummyPowerStrip(PowerStrip):
             ]
 
         return cls.DEVICES
-
-    @classmethod
-    def get_device(cls, device_id: str) -> DummyPowerStrip | None:
-        devices = cls.search_for_devices()
-        for d in devices:
-            if d.device_id == device_id:
-                return d
-        return None
-
-    def __repr__(self) -> str:
-        return f"DummyPowerStrip: {self.device_id}"

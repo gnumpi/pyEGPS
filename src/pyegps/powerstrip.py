@@ -55,10 +55,6 @@ class PowerStrip(Device, abc.ABC):
 
         _logger.info(f"Socket {socket} switched on.")
 
-    def __repr__(self) -> str:
-        """Override default repr string."""
-        return f"Powerstrip: {self.device_id}\n"
-
     def summary(self) -> str:
         s = self.__repr__() + "\n"
         for socket in range(self.numberOfSockets):

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import argparse
 
-from . import get_all_devices, get_device_types, __version__
+from . import search_for_devices, get_device_types, __version__
 from .device import Device
 from .exceptions import INVALID_SOCKET_NUMBER
 
@@ -15,7 +15,7 @@ def print_status(dev: Device):
 
 def list_devices(device_type: str = "all") -> int:
     """Print __repr__() for all devices."""
-    for dev in get_all_devices():
+    for dev in search_for_devices():
         if device_type == "all" or dev.get_device_type() == device_type:
             print(dev)
     return 0
@@ -87,7 +87,7 @@ def cli(argList: list[str]) -> int:
         dev_type = args.type if len(device_types) > 1 else "all"
         return list_devices(dev_type)
 
-    devices = get_all_devices()
+    devices = search_for_devices()
     # filter devices if requested
     if args.device is not None:
         devices = [d for d in devices if d.device_id == args.device]
