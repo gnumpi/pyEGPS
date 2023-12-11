@@ -16,6 +16,9 @@ dependencies = [
     "pyusb",
 ]
 
+[project.urls]  # Optional
+"Homepage" = "https://github.com/gnumpi/pyegps"
+
 [build-system]
 requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
