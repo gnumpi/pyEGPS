@@ -1,11 +1,11 @@
 """Abstract PowerStrip Class."""
-
+from __future__ import annotations
 import abc
 import logging
 
 from .device import Device
 from .exceptions import (
-    INVALID_SOCKET_NUMBER,
+    InvalidSocketNumber,
 )
 
 _logger = logging.getLogger(__name__)
@@ -22,8 +22,9 @@ class PowerStrip(Device, abc.ABC):
     @abc.abstractmethod
     def numberOfSockets(self) -> int:
         """Return number of controllable sockets."""
+        return 0
 
-    def get_status(self, socket: int) -> bool:
+    def get_status(self, socket: int) -> bool | None:
         """
         Get the status of the socket given by 'socket'.
 
@@ -31,7 +32,8 @@ class PowerStrip(Device, abc.ABC):
         @return: status
         """
         if socket < 0 or socket > self.numberOfSockets - 1:
-            raise INVALID_SOCKET_NUMBER
+            raise InvalidSocketNumber
+        return None
 
     def switch_off(self, socket: int) -> None:
         """
@@ -40,7 +42,7 @@ class PowerStrip(Device, abc.ABC):
         @param socket: socket number
         """
         if socket < 0 or socket > self.numberOfSockets - 1:
-            raise INVALID_SOCKET_NUMBER
+            raise InvalidSocketNumber
 
         _logger.info(f"Socket {socket} switched off.")
 
@@ -51,7 +53,7 @@ class PowerStrip(Device, abc.ABC):
         @param socket: socket number
         """
         if socket < 0 or socket > self.numberOfSockets - 1:
-            raise INVALID_SOCKET_NUMBER
+            raise InvalidSocketNumber
 
         _logger.info(f"Socket {socket} switched on.")
 

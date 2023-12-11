@@ -3,6 +3,10 @@ from __future__ import annotations
 
 import abc
 
+from typing import TypeVar
+
+T = TypeVar("T", bound="Device")
+
 
 class Device(abc.ABC):
     """Abstract base class for all devices."""
@@ -56,7 +60,7 @@ class Device(abc.ABC):
 
     @classmethod
     @abc.abstractmethod
-    def search_for_devices(cls) -> list[Device]:
+    def search_for_devices(cls: type[T]) -> list[T]:
         """Search for supported devices."""
 
     @abc.abstractmethod

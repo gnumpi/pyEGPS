@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 
 import usb.core
-from usb.core import Device as UsbDevice
+from usb.core import Device as UsbDevice, NoBackendError
 from usb.util import (
     CTRL_IN,
     CTRL_OUT,
@@ -11,11 +11,13 @@ from usb.util import (
     CTRL_RECIPIENT_INTERFACE,
 )
 
+from ..device import Device
 from ..powerstrip import PowerStrip
 
 from ..exceptions import (
-    USB_IO_ERROR,
-    UNSUPPORTED_PRODUCT_ID,
+    MissingLibrary,
+    MaximumConnectionTriesReached,
+    UnsupportedProducId,
 )
 
 _logger = logging.getLogger(__name__)
@@ -47,13 +49,13 @@ class PowerStripUSB(PowerStrip):
         self.productId: int = dev.idProduct
 
         if self.productId not in USB_PRODUCT_IDS:
-            raise UNSUPPORTED_PRODUCT_ID
+            raise UnsupportedProducId
 
         self._dev: UsbDevice = dev
         self._uid: str | None = None
 
         minAddr, maxAddr = PRODUCT_SOCKET_RANGES[USB_PRODUCT_IDS.index(self.productId)]
-        self._addrMapping: list[int] = range(minAddr, maxAddr + 1)
+        self._addrMapping: range = range(minAddr, maxAddr + 1)
 
     @classmethod
     def get_implementation_id(cls) -> str:
@@ -64,7 +66,7 @@ class PowerStripUSB(PowerStrip):
     def uid(self) -> str:
         """Return an identifier for PowerStripUSB devices, read from firmware."""
         if self._uid is None:
-            self._read_device_id()
+            self._uid = self._read_device_id()
         return self._uid
 
     @property
@@ -119,11 +121,11 @@ class PowerStripUSB(PowerStrip):
         buf = bytes([3 * addr, 0x03])
         self._set_feature_report(3 * addr, buf)
 
-    def _read_device_id(self) -> None:
+    def _read_device_id(self) -> str:
         report_id: int = 0x01
         id = self._get_feature_report(report_id)
-        self._uid = ":".join([format(x, "02x") for x in id])
-        _logger.debug(f"The device id is: {self.device_id}")
+        _logger.debug(f"The device id is: {id!r}")
+        return ":".join([format(x, "02x") for x in id])
 
     def _get_feature_report(self, report_id: int) -> bytes:
         bmRequestType: int = CTRL_IN | CTRL_TYPE_CLASS | CTRL_RECIPIENT_INTERFACE
@@ -131,16 +133,20 @@ class PowerStripUSB(PowerStrip):
         wValue: int = (USB_HID_REPORT_FEATURE << 8) | (report_id & 255)
         wIndex: int = 0
         wLength: int = 5
-        return self._retry_ctrl_transfer(
+        ret = self._retry_ctrl_transfer(
             bmRequestType, bRequest, wValue, wIndex, wLength
         )
+        assert isinstance(ret, bytes)
+        return ret
 
     def _set_feature_report(self, report_id: int, data: bytes) -> int:
         bmRequestType: int = CTRL_OUT | CTRL_TYPE_CLASS | CTRL_RECIPIENT_INTERFACE
         bRequest: int = USB_HID_SET_REPORT
         wValue: int = (USB_HID_REPORT_FEATURE << 8) | (report_id & 255)
         wIndex: int = 0
-        return self._retry_ctrl_transfer(bmRequestType, bRequest, wValue, wIndex, data)
+        ret = self._retry_ctrl_transfer(bmRequestType, bRequest, wValue, wIndex, data)
+        assert isinstance(ret, int)
+        return ret
 
     def _retry_ctrl_transfer(
         self,
@@ -172,32 +178,37 @@ class PowerStripUSB(PowerStrip):
                     data_or_wLength,
                     USB_CTRL_TRANSFER_TIMEOUT,
                 )
-                if req_in and len(buf_or_len) == 0:
-                    continue
             except usb.core.USBError as e:
                 _logger.debug(f"ctrl_transfer: try number {i}, usb error: {e}")
                 continue
             if req_in:
-                return bytes(buf_or_len)
+                assert isinstance(buf_or_len, bytes)
+                if len(buf_or_len) == 0:
+                    continue
+                return buf_or_len
+
             return int(buf_or_len)
 
-        raise USB_IO_ERROR
+        raise MaximumConnectionTriesReached
 
     @classmethod
     def search_for_devices(cls) -> list[PowerStripUSB]:
         """List the usb devices which have a known EG-PM product_id."""
         devices = []
         for prodId in USB_PRODUCT_IDS:
-            devices += [
-                cls(dev)
-                for dev in usb.core.find(
-                    find_all=True, idVendor=USB_VENDOR_ID, idProduct=prodId
-                )
-            ]
+            try:
+                devices += [
+                    cls(dev)
+                    for dev in usb.core.find(
+                        find_all=True, idVendor=USB_VENDOR_ID, idProduct=prodId
+                    )
+                ]
+            except NoBackendError:
+                raise MissingLibrary
         return devices
 
     @classmethod
-    def get_device(cls, device_id: str) -> PowerStripUSB | None:
+    def get_device(cls, device_id: str) -> Device | None:
         """Try to locate a specific EG-PM device.
 
         :param deviceId: The device specific firmware id.
@@ -207,6 +218,6 @@ class PowerStripUSB(PowerStrip):
         """
         candidates = cls.search_for_devices()
         for dev in candidates:
-            if dev.deviceId == device_id:
+            if dev.device_id == device_id:
                 return dev
         return None

@@ -28,3 +28,9 @@ where = ["src"]
 # check out https://github.com/pypa/setuptools_scm
 version_scheme = "no-guess-dev"
 version_file =  "src/pyegps/_version.py"
+
+[tool.mypy]
+
+[[tool.mypy.overrides]]
+module = 'usb.*'
+ignore_missing_imports = true

@@ -1,32 +1,46 @@
 """Command line interface (cli) tests for pyEGPS."""
-import pyegps
+
+import pytest
+from unittest.mock import patch
+
 from pyegps import cli
+from pyegps.fakes.powerstrip import FakePowerStrip
 
-pyegps.use_dummy_devices()
+fake_devices = FakePowerStrip.search_for_devices()
 
 
-def test_exit_codes():
+@pytest.mark.parametrize(
+    ("device_id", "cli_args", "return_code"),
+    [
+        # Device not found
+        ("XX:XX:XX:XX", ("set", "--on", "0"), 1),
+        # No socket specified
+        ("DYPS:00:11:22", ("set", "--on"), 1),
+        # Device has sockets 0..3, set socket 3
+        ("DYPS:AA:BB:CC", ("set", "--on", "3"), 0),
+        # Device has sockets 0..1, set socket 3
+        ("DYPS:00:11:22", ("set", "--on", "3"), 1),
+        # Device has sockets 0..3, receive status 0..3
+        ("DYPS:AA:BB:CC", ("status", "0", "1", "2", "3"), 0),
+        # Device has sockets 0..1, receive status 0..3
+        ("DYPS:00:11:22", ("status", "0", "1", "2", "3"), 1),
+        # Device has sockets 0..3, receive status summary
+        ("DYPS:AA:BB:CC", ("status",), 0),
+    ],
+)
+def test_exit_codes(device_id: str, cli_args: tuple["str"], return_code: int) -> None:
     """Checking error handling via exit codes."""
-    # Device not found
-    assert cli.cli(["--device", "XX:XX:XX:XX", "set", "--on", "0"]) == 1
-    # No socket specified
-    assert cli.cli(["--device", "DYPS:00:11:22", "set", "--on"]) == 1
-    # Device has socket 3
-    assert cli.cli(["--device", "DYPS:AA:BB:CC", "set", "--on", "3"]) == 0
-    # Device has only sockets 0 and 1
-    assert cli.cli(["--device", "DYPS:00:11:22", "set", "--on", "3"]) == 1
-    # Correct status request
-    assert cli.cli(["--device", "DYPS:AA:BB:CC", "status", "0", "1", "2", "3"]) == 0
-    # Correct status request (no socket given, prints summary)
-    assert cli.cli(["--device", "DYPS:AA:BB:CC", "status"]) == 0
-    # Device has no socket 3
-    assert cli.cli(["--device", "DYPS:00:11:22", "status", "0", "1", "2", "3"]) == 1
+    with patch("pyegps.cli.search_for_devices", return_value=fake_devices):
+        assert cli.cli(("--device", device_id) + cli_args) == return_code
 
 
 def test_outputs(capsys):
     """Checking consistency of setting and reading socket status."""
-    # set status and read if it the same
-    cli.cli(["--device", "DYPS:AA:BB:CC", "set", "--on", "0", "2", "--off", "1", "3"])
-    cli.cli(["--device", "DYPS:AA:BB:CC", "status", "0", "1", "2", "3"])
-    captured = capsys.readouterr()
-    assert captured.out.strip() == "on off on off"
+    with patch("pyegps.cli.search_for_devices", return_value=fake_devices):
+        # set status and read if it the same
+        cli.cli(
+            ["--device", "DYPS:AA:BB:CC", "set", "--on", "0", "2", "--off", "1", "3"]
+        )
+        cli.cli(["--device", "DYPS:AA:BB:CC", "status", "0", "1", "2", "3"])
+        captured = capsys.readouterr()
+        assert captured.out.strip() == "on off on off"

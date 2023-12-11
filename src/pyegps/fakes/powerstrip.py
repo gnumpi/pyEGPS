@@ -6,10 +6,10 @@ import random
 from pyegps.powerstrip import PowerStrip
 
 
-class DummyPowerStrip(PowerStrip):
+class FakePowerStrip(PowerStrip):
     """Dummy PowerStrip Device."""
 
-    DEVICES = []
+    DEVICES: list[FakePowerStrip] = []
 
     def __init__(self, devId: str, number_of_sockets: int):
         """Initiate new DummyDevice."""
@@ -56,7 +56,7 @@ class DummyPowerStrip(PowerStrip):
         return "DYPS"
 
     @classmethod
-    def search_for_devices(cls) -> list[DummyPowerStrip]:
+    def search_for_devices(cls) -> list[FakePowerStrip]:
         """Return the dummy devices, create new if necessary."""
         if len(cls.DEVICES) == 0:
             cls.DEVICES += [

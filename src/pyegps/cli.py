@@ -5,7 +5,8 @@ import argparse
 
 from . import search_for_devices, get_device_types, __version__
 from .device import Device
-from .exceptions import INVALID_SOCKET_NUMBER
+from .powerstrip import PowerStrip
+from .exceptions import EgpsException, InvalidSocketNumber
 
 
 def print_status(dev: Device):
@@ -85,9 +86,17 @@ def cli(argList: list[str]) -> int:
 
     if args.command == "list":
         dev_type = args.type if len(device_types) > 1 else "all"
-        return list_devices(dev_type)
+        try:
+            return list_devices(dev_type)
+        except EgpsException as e:
+            print(f"Error: {e}")
+            return 1
+    try:
+        devices = search_for_devices(device_type="PowerStrip")
+    except EgpsException as e:
+        print(f"Error: {e}")
+        return 1
 
-    devices = search_for_devices()
     # filter devices if requested
     if args.device is not None:
         devices = [d for d in devices if d.device_id == args.device]
@@ -107,10 +116,11 @@ def cli(argList: list[str]) -> int:
             print("Please specify at least one --on or --off argument")
             return 1
         for device in devices:
+            assert isinstance(device, PowerStrip)
             for socket in on_sockets:
                 try:
                     device.switch_on(socket)
-                except INVALID_SOCKET_NUMBER:
+                except InvalidSocketNumber:
                     print(
                         f"Device {device} has no socket {socket}. Known sockets: {list(range(device.numberOfSockets))}."
                     )
@@ -118,7 +128,7 @@ def cli(argList: list[str]) -> int:
             for socket in off_sockets:
                 try:
                     device.switch_off(socket)
-                except INVALID_SOCKET_NUMBER:
+                except InvalidSocketNumber:
                     print(
                         f"Device {device} has no socket {socket}. Known sockets: {list(range(device.numberOfSockets))}."
                     )
@@ -127,6 +137,7 @@ def cli(argList: list[str]) -> int:
 
     elif args.command == "status":
         for device in devices:
+            assert isinstance(device, PowerStrip)
             if len(args.SOCKET_NR) == 0:
                 print_status(device)
             else:
@@ -134,7 +145,7 @@ def cli(argList: list[str]) -> int:
                 for socket in args.SOCKET_NR:
                     try:
                         status.append(device.get_status(socket))
-                    except INVALID_SOCKET_NUMBER:
+                    except InvalidSocketNumber:
                         print(
                             f"Device {device} has no socket {socket}. Known sockets: {list(range(device.numberOfSockets))}."
                         )
