@@ -2,6 +2,7 @@
 from __future__ import annotations
 import logging
 
+from array import array
 import usb.core
 from usb.core import Device as UsbDevice, NoBackendError
 from usb.util import (
@@ -182,10 +183,10 @@ class PowerStripUSB(PowerStrip):
                 _logger.debug(f"ctrl_transfer: try number {i}, usb error: {e}")
                 continue
             if req_in:
-                assert isinstance(buf_or_len, bytes)
+                assert isinstance(buf_or_len, array)
                 if len(buf_or_len) == 0:
                     continue
-                return buf_or_len
+                return bytes(buf_or_len)
 
             return int(buf_or_len)
 

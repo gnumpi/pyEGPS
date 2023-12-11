@@ -1,6 +1,7 @@
 """Fixtures definitions for pyEGPS tests."""
 from __future__ import annotations
 
+from array import array
 import pytest
 
 CTRL_IN = 1 << 7
@@ -38,7 +39,7 @@ class FakeUsbDevice:
         USB_CTRL_TRANSFER_TIMEOUT,
     ) -> bytes | int:
         req_in: bool = (bmRequestType & CTRL_IN) == CTRL_IN
-        return b"" if req_in else 0
+        return array("B", []) if req_in else 0
 
 
 @pytest.fixture
